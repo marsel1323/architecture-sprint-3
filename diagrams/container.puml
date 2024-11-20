@@ -1,0 +1,50 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title "Тёплый Дом: Диаграмма контейнеров"
+
+LAYOUT_WITH_LEGEND()
+
+Person(user, "Пользователь", "Управляет умным домом через веб или мобильное приложение")
+Person(admin, "Администратор", "Помогает пользователям и администрирует систему")
+
+System_Boundary("SmartHomeSystem", "Система умного дома") {
+    Container(apiGateway, "API Gateway", "Nginx/Kong", "Единая точка входа для всех клиентских запросов. Маршрутизация и проверка прав.")
+    Container(heatingService, "Heating Control Service", "Go", "Управление отоплением (включение/выключение, поддержание температуры)")
+    Container(temperatureService, "Temperature Monitoring Service", "Python", "Сбор и хранение данных с датчиков температуры")
+    Container(deviceService, "Device Management Service", "Node.js", "Управление устройствами умного дома (регистрация, состояние)")
+    Container(userService, "User Management Service", "Java", "Управление пользователями (регистрация, аутентификация)")
+    Container(scenarioService, "Scenario Management Service", "Go", "Создание и управление пользовательскими сценариями")
+    Container(notificationService, "Notification Service", "Java", "Отправка уведомлений пользователям (email, push)")
+    ContainerDb(userDb, "User DB", "PostgreSQL", "Данные пользователей")
+    ContainerDb(temperatureDb, "Telemetry DB", "InfluxDB", "Данные телеметрии (температура)")
+    ContainerDb(deviceDb, "Device DB", "MongoDB", "Информация об устройствах и их состоянии")
+    ContainerDb(scenarioDb, "Scenario DB", "PostgreSQL", "Данные пользовательских сценариев")
+    SystemQueue(kafka, "Kafka", "Apache Kafka", "Шина данных для событий и телеметрии")
+}
+
+System_Ext(devices, "Устройства умного дома", "Датчики температуры, освещения, отопления и другие устройства")
+
+Rel(user, apiGateway, "Отправляет запросы для управления устройствами", "HTTP/REST")
+Rel(admin, apiGateway, "Взаимодействует для администрирования системы", "HTTP/REST")
+
+Rel(apiGateway, heatingService, "Маршрутизирует запросы управления отоплением")
+Rel(apiGateway, temperatureService, "Маршрутизирует запросы на получение температурных данных")
+Rel(apiGateway, deviceService, "Маршрутизирует запросы для управления устройствами")
+Rel(apiGateway, userService, "Маршрутизирует запросы для управления пользователями")
+Rel(apiGateway, scenarioService, "Маршрутизирует запросы для управления сценариями")
+Rel(apiGateway, notificationService, "Маршрутизирует запросы для отправки уведомлений")
+
+Rel(temperatureService, kafka, "Публикует данные телеметрии", "JSON")
+Rel(deviceService, kafka, "Публикует события устройств", "JSON")
+Rel(kafka, heatingService, "Передаёт данные о температуре", "JSON")
+Rel(kafka, notificationService, "Передаёт события и изменения состояния устройств", "JSON")
+
+Rel(userService, userDb, "Читает и записывает данные пользователей")
+Rel(temperatureService, temperatureDb, "Читает и записывает данные телеметрии")
+Rel(deviceService, deviceDb, "Читает и записывает информацию об устройствах")
+Rel(scenarioService, scenarioDb, "Читает и записывает пользовательские сценарии")
+
+Rel(devices, kafka, "Обменивается данными через протоколы MQTT/HTTP")
+
+@enduml

@@ -1,0 +1,77 @@
+@startuml
+!define primary_key(x) <b>x</b>
+!define foreign_key(x) <u>x</u>
+
+entity "User" as User {
+    primary_key(id) : UUID
+    --
+    name : string
+    email : string
+    password_hash : string
+    created_at : datetime
+    updated_at : datetime
+}
+
+entity "House" as House {
+    primary_key(id) : UUID
+    --
+    address : string
+    title : string
+    user_id : UUID [FK к User]
+    created_at : datetime
+    updated_at : datetime
+}
+
+entity "Device" as Device {
+    primary_key(id) : UUID
+    --
+    serial_number : string
+    status : string
+    type_id : UUID [FK к DeviceType]
+    house_id : UUID [FK к House]
+    created_at : datetime
+    updated_at : datetime
+}
+
+entity "DeviceType" as DeviceType {
+    primary_key(id) : UUID
+    --
+    name : string
+    description : string
+    created_at : datetime
+}
+
+entity "TelemetryData" as TelemetryData {
+    primary_key(id) : UUID
+    --
+    device_id : UUID [FK к Device]
+    timestamp : datetime
+    data : string
+}
+
+entity "Scenario" as Scenario {
+    primary_key(id) : UUID
+    --
+    name : string
+    description : string
+    user_id : UUID [FK к User]
+    created_at : datetime
+    updated_at : datetime
+}
+
+entity "Notification" as Notification {
+    primary_key(id) : UUID
+    --
+    user_id : UUID [FK к User]
+    message : string
+    status : boolean
+    created_at : datetime
+}
+
+User ||--o{ House : "owns"
+House ||--o{ Device : "contains"
+Device ||--o{ TelemetryData : "produces"
+User ||--o{ Scenario : "creates"
+User ||--o{ Notification : "receives"
+Device ||--|{ DeviceType : "has type"
+@enduml

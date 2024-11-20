@@ -1,0 +1,18 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title "Device Management Service: Component Diagram"
+
+Container_Boundary(DeviceManagementService, "Device Management Service") {
+    Component(apiComponent, "API Component", "REST API", "Принимает запросы управления устройствами")
+    Component(commandHandler, "Command Handler", "Go", "Обрабатывает команды управления устройствами")
+    Component(stateManager, "Device State Manager", "Go", "Обновляет состояния устройств")
+    Component(eventPublisher, "Event Publisher", "Kafka", "Публикует события о состоянии устройств")
+    ComponentDb(deviceDb, "Device Database", "MongoDB", "Хранит данные устройств")
+}
+
+Rel(apiComponent, commandHandler, "Обрабатывает запросы и передаёт команды")
+Rel(commandHandler, stateManager, "Передаёт команды для обновления состояния устройств")
+Rel(commandHandler, eventPublisher, "Публикует события об изменениях состояния")
+Rel(stateManager, deviceDb, "Читает и записывает состояние устройств")
+@enduml
