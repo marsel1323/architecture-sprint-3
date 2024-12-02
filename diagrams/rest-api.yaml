@@ -1,0 +1,126 @@
+openapi: 3.0.3
+info:
+  title: "Тёплый дом - API управления устройствами"
+  description: "API для работы с устройствами в экосистеме умного дома"
+  version: "1.0.0"
+servers:
+  - url: "https://teplyidom.com/api"
+paths:
+  /devices:
+    post:
+      summary: "Добавить новое устройство"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: "thermostat"
+                house_id:
+                  type: integer
+                  example: 1
+                serial_number:
+                  type: string
+                  example: "SN12345"
+                status:
+                  type: string
+                  enum: ["active", "inactive"]
+      responses:
+        '201':
+          description: "Устройство успешно добавлено"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 101
+                  message:
+                    type: string
+                    example: "Device created successfully"
+    get:
+      summary: "Получить список устройств"
+      responses:
+        '200':
+          description: "Список устройств"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 101
+                    type:
+                      type: string
+                      example: "thermostat"
+                    house_id:
+                      type: integer
+                      example: 1
+                    status:
+                      type: string
+                      example: "active"
+  /devices/{id}:
+    get:
+      summary: "Получить информацию об устройстве"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "Информация об устройстве"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 101
+                  type:
+                    type: string
+                    example: "thermostat"
+                  status:
+                    type: string
+                    example: "active"
+    patch:
+      summary: "Обновить состояние устройства"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: ["active", "inactive"]
+      responses:
+        '200':
+          description: "Состояние устройства обновлено"
+    delete:
+      summary: "Удалить устройство"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: "Устройство успешно удалено"

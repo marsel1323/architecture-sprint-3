@@ -1,0 +1,50 @@
+asyncapi: 2.6.0
+info:
+  title: "Тёплый дом - Асинхронный API"
+  description: "API для асинхронного взаимодействия с устройствами умного дома"
+  version: "1.0.0"
+servers:
+  production:
+    url: "kafka://broker.teplyidom.com:9092"
+    protocol: kafka
+channels:
+  device-command:
+    publish:
+      summary: "Отправка команды устройству"
+      message:
+        contentType: application/json
+        payload:
+          type: object
+          properties:
+            device_id:
+              type: integer
+              example: 101
+            command:
+              type: string
+              example: "turn_on"
+            parameters:
+              type: object
+              properties:
+                temperature:
+                  type: integer
+                  example: 22
+  telemetry-data:
+    subscribe:
+      summary: "Получение телеметрии от устройства"
+      message:
+        contentType: application/json
+        payload:
+          type: object
+          properties:
+            device_id:
+              type: integer
+              example: 101
+            telemetry:
+              type: object
+              properties:
+                temperature:
+                  type: number
+                  example: 22.5
+                humidity:
+                  type: number
+                  example: 45.3

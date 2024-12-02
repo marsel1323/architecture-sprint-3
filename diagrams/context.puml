@@ -1,0 +1,18 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title "Тёплый Дом" Context Diagram
+
+LAYOUT_WITH_LEGEND()
+
+Person(user, "Пользователь", "Управляет отоплением и просматривает данные с датчиков")
+Person(admin, "Техподдержка", "Помогает пользователям и подключает систему отопления")
+
+System(systemAlias, "Монолитное приложение Тёплый Дом", "Обрабатывает запросы пользователей и данные от датчиков")
+System_Ext(extDevices, "Устройства умного дома", "Датчики температуры и модули отопления")
+
+Rel(user, systemAlias, "Просматривает данные, управляет отоплением", "HTTP/REST")
+Rel(admin, systemAlias, "Администрирует систему, помогает пользователям", "HTTP/REST")
+Rel(systemAlias, extDevices, "Получает данные с датчиков, управляет устройствами", "HTTP/IoT протоколы")
+
+@enduml
